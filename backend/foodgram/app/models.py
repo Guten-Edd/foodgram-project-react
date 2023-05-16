@@ -1,10 +1,9 @@
 from django.db import models
+# from users.models import User
 
 
 class Tag(models.Model):
-    """
-    Модель тег для рецептов.
-    """
+    """Модель теги для рецептов."""
 
     name = models.CharField(verbose_name='Название',
                             max_length=200,
@@ -26,9 +25,7 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
-    """
-    Модель ингредиента.
-    """
+    """Модель ингредиенты."""
 
     name = models.CharField(verbose_name='Название',
                             max_length=200,
@@ -43,3 +40,76 @@ class Ingredient(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Recipe(models.Model):
+    """Модель рецепты."""
+
+    # author = models.ForeignKey(User,
+    #                            on_delete=models.CASCADE,
+    #                            verbose_name='Автор рецепта')
+    name = models.CharField(max_length=200,
+                            verbose_name='Название рецепта')
+    image = models.ImageField(
+        upload_to='recipes/',
+        verbose_name='Картинка',
+        help_text='Вставьте сюда картинку блюда',
+        null=False,
+        blank=False
+        )
+    text = models.TextField(verbose_name='Текстовое описание',
+                            help_text='Текстовое описание рецепта')
+    ingredients = models.ManyToManyField(
+        Ingredient,
+        through='IngredientRecipe',
+        through_fields=('recipe_id', 'ingredient_id'),
+        verbose_name='Ингредиенты',
+        blank=False
+        )
+    tags = models.ManyToManyField(
+        Tag,
+        blank=False,
+        verbose_name='Теги',
+        related_name='recipes'
+    )
+    cooking_time = models.IntegerField(
+        verbose_name='Время приготовления в минутах',
+    )
+    pub_date = models.DateTimeField(
+        verbose_name='Дата публикации',
+        auto_now_add=True
+    )
+
+    class Meta:
+        default_related_name = 'recipe'
+        ordering = ('-pub_date',)
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
+
+    def __str__(self):
+        return self.name
+
+
+class IngredientRecipe(models.Model):
+    """Связывающая таблица рецептов и ингредиентов."""
+
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete=models.CASCADE,
+        verbose_name='Ингридиент'
+        )
+    amount = models.PositiveIntegerField(null=False,
+                                         verbose_name='Количество')
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        verbose_name='рецепт'
+    )
+
+    class Meta:
+        default_related_name = 'recipe_ingredients'
+        verbose_name = 'Формирование ингредиентов'
+        verbose_name_plural = 'Формирования ингредиентов'
+
+    def __str__(self):
+        return f'{self.ingredient} {self.amount}'
