@@ -1,5 +1,5 @@
 from django.db import models
-# from users.models import User
+from users.models import Myuser
 
 
 class Tag(models.Model):
@@ -45,9 +45,9 @@ class Ingredient(models.Model):
 class Recipe(models.Model):
     """Модель рецепты."""
 
-    # author = models.ForeignKey(User,
-    #                            on_delete=models.CASCADE,
-    #                            verbose_name='Автор рецепта')
+    author = models.ForeignKey(Myuser,
+                               on_delete=models.CASCADE,
+                               verbose_name='Автор рецепта')
     name = models.CharField(max_length=200,
                             verbose_name='Название рецепта')
     image = models.ImageField(
