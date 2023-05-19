@@ -17,9 +17,13 @@ class Myuser(AbstractUser):
         verbose_name='Роль пользователя',
         default=ROLE_USER
     )
-    username = models.CharField('username', max_length=150, unique=True)
+    username = models.CharField('username',
+                                max_length=150,
+                                unique=True)
     password = models.CharField('password', max_length=150)
-    email = models.EmailField('e-mail', max_length=254, unique=True)
+    email = models.EmailField('e-mail',
+                              max_length=254,
+                              unique=True)
     first_name = models.TextField('first_name', max_length=150)
     last_name = models.TextField('last_name', max_length=150)
 
@@ -45,7 +49,7 @@ class Follow(models.Model):
         help_text='Подписчик на автора рецепта'
     )
     author = models.ForeignKey(
-        Myuser, null=True,
+        Myuser,
         on_delete=models.CASCADE,
         related_name='followed',
         verbose_name='Автор',
@@ -57,3 +61,7 @@ class Follow(models.Model):
             fields=['author', 'user'],
             name='unique_object'
         )]
+
+    def __str__(self) -> str:
+        return (f'Пользователь {self.user.username}'
+                f' подписан на {self.author.username}')

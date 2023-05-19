@@ -14,7 +14,8 @@ class Tag(models.Model):
                              unique=True,
                              max_length=7)
     slug = models.SlugField(unique=True,
-                            max_length=200)
+                            max_length=200,
+                            verbose_name='Слаг')
 
     class Meta:
         verbose_name = 'Тег'
@@ -25,7 +26,7 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
-    """Модель ингредиенты."""
+    """Модель ингредиентов."""
 
     name = models.CharField(verbose_name='Название',
                             max_length=200,
@@ -39,7 +40,7 @@ class Ingredient(models.Model):
         verbose_name_plural = 'Ингредиенты'
 
     def __str__(self):
-        return self.name
+        return f'{self.name} {self.measurement_unit}'
 
 
 class Recipe(models.Model):
@@ -72,7 +73,7 @@ class Recipe(models.Model):
         verbose_name='Теги',
         related_name='recipes'
     )
-    cooking_time = models.IntegerField(
+    cooking_time = models.PositiveIntegerField(
         verbose_name='Время приготовления в минутах',
     )
     pub_date = models.DateTimeField(
