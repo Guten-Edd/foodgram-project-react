@@ -1,10 +1,9 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
 from django.db import models
 
 
-class Myuser(AbstractUser):
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'password', 'first_name', 'last_name']
+class MyUser(AbstractUser):
     ROLE_USER = 'user'
     ROLE_ADMIN = 'admin'
     USERS_ROLE = (
@@ -15,20 +14,28 @@ class Myuser(AbstractUser):
         choices=USERS_ROLE,
         max_length=10,
         verbose_name='Роль пользователя',
-        default=ROLE_USER
+        default=ROLE_USER,
     )
-    username = models.CharField('username',
-                                max_length=150,
-                                unique=True)
-    password = models.CharField('password', max_length=150)
-    email = models.EmailField('e-mail',
-                              max_length=254,
-                              unique=True)
-    first_name = models.TextField('first_name', max_length=150)
-    last_name = models.TextField('last_name', max_length=150)
+    username = models.CharField(
+        'username',
+        max_length=150,
+        unique=True,
+        validators=[
+            RegexValidator(regex=r'^[\w.@+-]',
+                           message='Недопустимые символы в имени пользователя')
+        ]
+    )
+    password = models.CharField('Пароль', max_length=150,)
+    email = models.EmailField(
+        'e-mail',
+        max_length=254,
+        unique=True,
+        )
+    first_name = models.TextField('Имя', max_length=150,)
+    last_name = models.TextField('Фамилия', max_length=150,)
 
     class Meta:
-        ordering = ['-date_joined']
+        ordering = ['-date_joined',]
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
@@ -42,14 +49,14 @@ class Myuser(AbstractUser):
 
 class Follow(models.Model):
     user = models.ForeignKey(
-        Myuser,
+        MyUser,
         on_delete=models.CASCADE,
         related_name='follower',
         verbose_name='Подписчик',
         help_text='Подписчик на автора рецепта'
     )
     author = models.ForeignKey(
-        Myuser,
+        MyUser,
         on_delete=models.CASCADE,
         related_name='followed',
         verbose_name='Автор',
@@ -57,6 +64,8 @@ class Follow(models.Model):
     )
 
     class Meta:
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
         constraints = [models.UniqueConstraint(
             fields=['author', 'user'],
             name='unique_object'
