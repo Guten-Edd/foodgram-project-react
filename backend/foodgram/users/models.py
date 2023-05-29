@@ -3,14 +3,18 @@ from django.core.validators import RegexValidator
 from django.db import models
 
 
+
+ROLE_USER = 'user'
+ROLE_ADMIN = 'admin'
+USERS_ROLE = (
+    (ROLE_USER, 'Пользователь'),
+    (ROLE_ADMIN, 'Админ'),
+)
+
+
 class MyUser(AbstractUser):
     """Кастомная модель юзера."""
-    ROLE_USER = 'user'
-    ROLE_ADMIN = 'admin'
-    USERS_ROLE = (
-        (ROLE_USER, 'Пользователь'),
-        (ROLE_ADMIN, 'Админ'),
-    )
+
     role = models.CharField(
         choices=USERS_ROLE,
         max_length=10,
