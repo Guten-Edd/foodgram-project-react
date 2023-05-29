@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Follow
-from .serializers import FollowShowSerializer, CustomUserSerializer
+from .serializers import FollowShowSerializer, CustomUserSerializer, FollowSerializer
 
 User = get_user_model()
 
@@ -27,11 +27,13 @@ class CustomUserViewSet(UserViewSet):
         user = request.user
         author_id = self.kwargs.get('id')
         author = get_object_or_404(User, id=author_id)
-
         if request.method == 'POST':
-            serializer = FollowShowSerializer(author,
-                                             data=request.data,
-                                             context={'request': request})
+            serializer = FollowSerializer(data={
+                'user': user.id,
+                'author': author.id,
+            },
+            context={'request': request})
+            
             serializer.is_valid(raise_exception=True)
             Follow.objects.create(user=user, author=author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)

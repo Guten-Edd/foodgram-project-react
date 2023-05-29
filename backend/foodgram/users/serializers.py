@@ -109,7 +109,7 @@ class FollowSerializer(ModelSerializer):
 
     def to_representation(self, instance):
         return FollowShowSerializer(
-            instance.author,
+            instance['author'],
             context={'request': self.context.get('request')}
         ).data
 
