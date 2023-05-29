@@ -2,8 +2,6 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
 
-
-
 ROLE_USER = 'user'
 ROLE_ADMIN = 'admin'
 USERS_ROLE = (
@@ -40,7 +38,7 @@ class MyUser(AbstractUser):
     last_name = models.TextField('Фамилия', max_length=150,)
 
     class Meta:
-        ordering = ['-date_joined',]
+        ordering = ['-date_joined', ]
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 

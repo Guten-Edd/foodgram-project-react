@@ -1,21 +1,28 @@
-from django.contrib.auth import get_user_model
-from djoser.serializers import UserSerializer, UserCreateSerializer
-from django.shortcuts import get_object_or_404
-from rest_framework.serializers import (SerializerMethodField,
-                                        ModelSerializer,
-                                        ValidationError)
-from .models import Follow
+from api.serializers import RecipeShortSerializer
 from app.models import Recipe
-from app.serializers import RecipeShortSerializer
+from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
+from djoser.serializers import UserCreateSerializer, UserSerializer
+from rest_framework.serializers import (ModelSerializer, SerializerMethodField,
+                                        ValidationError)
 
+from .models import Follow
 
 User = get_user_model()
+
 
 class UserCreateSerializer(UserCreateSerializer):
     """Сериализатор для создания пользователя"""
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password', 'first_name', 'last_name')
+        fields = (
+            'id',
+            'username',
+            'email',
+            'password',
+            'first_name',
+            'last_name',
+        )
 
 
 class CustomUserSerializer(UserSerializer):
@@ -31,7 +38,7 @@ class CustomUserSerializer(UserSerializer):
             'username',
             'first_name',
             'last_name',
-            'is_subscribed'
+            'is_subscribed',
         ]
 
     def validate_username(self, value):
@@ -57,8 +64,14 @@ class FollowShowSerializer(ModelSerializer):
     class Meta(CustomUserSerializer.Meta):
         model = User
         fields = (
-            'email', 'id', 'username', 'first_name', 'last_name',
-            'is_subscribed', 'recipes', 'recipes_count'
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes',
+            'recipes_count',
         )
 
     def get_recipes_count(self, author):
@@ -96,14 +109,14 @@ class FollowSerializer(ModelSerializer):
         get_object_or_404(User, username=data['author'])
         if self.context['request'].user == data['author']:
             raise ValidationError({
-                'errors': 'Подписка на себя запрещена.'
+                'detail': 'Подписка на себя запрещена.'
             })
         if Follow.objects.filter(
                 user=self.context['request'].user,
                 author=data['author']
         ):
             raise ValidationError({
-                'errors': 'Подписка уже оформлена.'
+                'detail': 'Подписка уже оформлена.'
             })
         return data
 
@@ -112,4 +125,3 @@ class FollowSerializer(ModelSerializer):
             instance['author'],
             context={'request': self.context.get('request')}
         ).data
-

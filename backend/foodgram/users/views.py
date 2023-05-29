@@ -1,14 +1,15 @@
+from api.pagination import CustomPagination
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
-from api.pagination import CustomPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Follow
-from .serializers import FollowShowSerializer, CustomUserSerializer, FollowSerializer
+from .serializers import (CustomUserSerializer, FollowSerializer,
+                          FollowShowSerializer)
 
 User = get_user_model()
 
@@ -28,12 +29,14 @@ class CustomUserViewSet(UserViewSet):
         author_id = self.kwargs.get('id')
         author = get_object_or_404(User, id=author_id)
         if request.method == 'POST':
-            serializer = FollowSerializer(data={
-                'user': user.id,
-                'author': author.id,
-            },
-            context={'request': request})
-            
+            serializer = FollowSerializer(
+                data={
+                    'user': user.id,
+                    'author': author.id,
+                    },
+                context={'request': request}
+            )
+
             serializer.is_valid(raise_exception=True)
             Follow.objects.create(user=user, author=author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -52,7 +55,9 @@ class CustomUserViewSet(UserViewSet):
         user = request.user
         queryset = User.objects.filter(followed__user=user)
         pages = self.paginate_queryset(queryset)
-        serializer = FollowShowSerializer(pages,
-                                         many=True,
-                                         context={'request': request})
+        serializer = FollowShowSerializer(
+            pages,
+            many=True,
+            context={'request': request}
+        )
         return self.get_paginated_response(serializer.data)

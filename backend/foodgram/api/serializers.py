@@ -1,13 +1,24 @@
+from app.models import (Favourite, Ingredient, IngredientRecipe, Recipe,
+                        ShoppingCart, Tag)
 from django.db.transaction import atomic
 from drf_base64.fields import Base64ImageField
-from app.models import (Favourite, Ingredient, Recipe, IngredientRecipe,
-                            ShoppingCart, Tag)
 from rest_framework.serializers import (IntegerField, ModelSerializer,
                                         PrimaryKeyRelatedField,
                                         SerializerMethodField,
                                         SlugRelatedField, ValidationError)
-
 from users.serializers import CustomUserSerializer
+
+
+class RecipeShortSerializer(ModelSerializer):
+    """ Сериализатор просмотра Рецептов. """
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time',
+        )
 
 
 class TagSerializer(ModelSerializer):
@@ -15,12 +26,12 @@ class TagSerializer(ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = [
+        fields = (
             'id',
             'name',
             'color',
             'slug'
-        ]
+        )
 
 
 class IngredientSerializer(ModelSerializer):
@@ -32,18 +43,6 @@ class IngredientSerializer(ModelSerializer):
             'id',
             'name',
             'measurement_unit'
-        )
-
-
-class RecipeShortSerializer(ModelSerializer):
-
-    class Meta:
-        model = Recipe
-        fields = (
-            'id',
-            'name',
-            'image',
-            'cooking_time'
         )
 
 
@@ -90,7 +89,7 @@ class RecipeSerializer(ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = [
+        fields = (
             'id',
             'tags',
             'author',
@@ -101,7 +100,7 @@ class RecipeSerializer(ModelSerializer):
             'image',
             'text',
             'cooking_time'
-        ]
+        )
 
     def get_is_favorited(self, obj):
         request = self.context.get('request')
@@ -161,12 +160,11 @@ class RecipeCreateSerializer(ModelSerializer):
     tags = PrimaryKeyRelatedField(
         queryset=Tag.objects.all(), many=True
     )
-    image = Base64ImageField()
     cooking_time = IntegerField()
 
     class Meta:
         model = Recipe
-        fields = [
+        fields = (
             'id',
             'author',
             'ingredients',
@@ -175,7 +173,7 @@ class RecipeCreateSerializer(ModelSerializer):
             'name',
             'text',
             'cooking_time'
-        ]
+        )
 
     def create_ingredients(self, recipe, ingredients):
         IngredientRecipe.objects.bulk_create([
@@ -236,7 +234,7 @@ class ShoppingCartSerializer(ModelSerializer):
     """ Сериализатор для списка покупок. """
 
     class Meta:
-        fields = ['recipe', 'user']
+        fields = ('recipe', 'user')
         model = ShoppingCart
 
     def validate(self, data):

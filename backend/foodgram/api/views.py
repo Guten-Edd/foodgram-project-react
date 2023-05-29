@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from app.models import (Favourite, Ingredient, IngredientRecipe, Recipe,
                         ShoppingCart, Tag)
 from django.contrib.auth import get_user_model
