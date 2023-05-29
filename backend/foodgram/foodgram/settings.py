@@ -134,7 +134,7 @@ AUTH_USER_MODEL = 'users.MyUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ],
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -145,9 +145,14 @@ REST_FRAMEWORK = {
 DJOSER = {
     'LOGIN_FIELD': 'email',
     'HIDE_USERS': False,
-    'SERIALIZERS': {},
-    'PERMISSIONS': {'PERMISSIONS': {
+    'SERIALIZERS': {
+        'user': 'users.serializers.CustomUserSerializer',
+        'user_list': 'users.serializers.CustomUserSerializer',
+        'current_user': 'users.serializers.CustomUserSerializer',
+        'user_create': 'users.serializers.UserCreateSerializer',
+    },
+    'PERMISSIONS':{
         'user': ('rest_framework.permissions.IsAuthenticated',),
         'user_list': ('rest_framework.permissions.AllowAny',),
-    }}
+    }
 }

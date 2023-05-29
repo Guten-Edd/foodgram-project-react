@@ -6,12 +6,8 @@ from .models import (Favourite, Ingredient, Recipe,
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'id', 'author', 'added_in_favorites')
+    list_display = ('name', 'id', 'author')
     list_filter = ('author', 'name', 'tags',)
-
-    @display(description='Количество в избранных')
-    def added_in_favorites(self, obj):
-        return obj.favorites.count()
 
 
 @admin.register(Ingredient)

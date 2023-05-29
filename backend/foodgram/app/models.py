@@ -145,6 +145,8 @@ class IngredientRecipe(models.Model):
 
 
 class Favourite(models.Model):
+    """Модель избранные."""
+
     user = models.ForeignKey(
         MyUser,
         on_delete=models.CASCADE,
@@ -172,6 +174,8 @@ class Favourite(models.Model):
 
 
 class ShoppingCart(models.Model):
+    """Модель корзина покупок."""
+
     user = models.ForeignKey(
         MyUser,
         on_delete=models.CASCADE,

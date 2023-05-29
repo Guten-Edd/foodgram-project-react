@@ -4,6 +4,7 @@ from django.db import models
 
 
 class MyUser(AbstractUser):
+    """Кастомная модель юзера."""
     ROLE_USER = 'user'
     ROLE_ADMIN = 'admin'
     USERS_ROLE = (
@@ -48,6 +49,7 @@ class MyUser(AbstractUser):
 
 
 class Follow(models.Model):
+    """Модель подписок на автора."""
     user = models.ForeignKey(
         MyUser,
         on_delete=models.CASCADE,
