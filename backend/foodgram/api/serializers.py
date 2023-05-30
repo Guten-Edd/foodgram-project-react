@@ -1,3 +1,5 @@
+import base64
+
 from app.models import (Favourite, Ingredient, IngredientRecipe, Recipe,
                         ShoppingCart, Tag)
 from django.contrib.auth import get_user_model
@@ -5,13 +7,12 @@ from django.core.files.base import ContentFile
 from django.db.transaction import atomic
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
-from rest_framework.serializers import (IntegerField, ModelSerializer,
+from rest_framework.serializers import (ImageField, IntegerField,
+                                        ModelSerializer,
                                         PrimaryKeyRelatedField,
                                         SerializerMethodField,
-                                        SlugRelatedField, ValidationError, ImageField)
+                                        SlugRelatedField, ValidationError)
 from users.models import Follow
-import base64
-
 
 User = get_user_model()
 
@@ -26,7 +27,6 @@ class Base64ImageField(ImageField):
             data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
         return super().to_internal_value(data)
 
-                        
 
 class CustomUserSerializer(UserSerializer):
     """ Сериализатор пользователя. """
@@ -51,6 +51,7 @@ class CustomUserSerializer(UserSerializer):
         return Follow.objects.filter(
             user=request.user, author=obj).exists()
 
+
 class RecipeShortSerializer(ModelSerializer):
     """ Сериализатор просмотра Рецептов. """
     image = Base64ImageField()
@@ -63,7 +64,6 @@ class RecipeShortSerializer(ModelSerializer):
             'image',
             'cooking_time',
         )
-
 
 
 class TagSerializer(ModelSerializer):
@@ -228,6 +228,7 @@ class RecipeCreateSerializer(ModelSerializer):
                 ingredient=ingredient['ingredient'],
             ) for ingredient in ingredients
         ])
+        return recipe
 
     def validate(self, data):
         ingredients = self.initial_data.get('ingredients')
@@ -239,7 +240,7 @@ class RecipeCreateSerializer(ModelSerializer):
                     'Есть задублированные ингредиенты!'
                 )
             ingredients_list.append(ingredient_id)
-        if data['cooking_time'] <= 0:
+        if data['cooking_time'] < 1:
             raise ValidationError(
                 'Время приготовления должно быть больше 0!'
             )
@@ -247,11 +248,11 @@ class RecipeCreateSerializer(ModelSerializer):
 
     @atomic
     def create(self, validated_data):
-        request = self.context.get('request')
+        user = self.context.get['request'].user
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(
-            author=request.user,
+            author=user,
             **validated_data
         )
         self.create_ingredients(recipe, ingredients)
@@ -273,10 +274,6 @@ class RecipeCreateSerializer(ModelSerializer):
                 'request': self.context.get('request'),
             }
         ).data
-
-
-
-
 
 
 class UserCreateSerializer(UserCreateSerializer):
@@ -335,7 +332,6 @@ class FollowShowSerializer(ModelSerializer):
             context={'request': queryset}
         )
         return serialiser.data
-
 
     def get_is_subscribed(self, author):
         return Follow.objects.filter(

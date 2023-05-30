@@ -22,7 +22,7 @@ from .permissions import IsAuthorOrAdminOrReadOnly
 from .serializers import (CustomUserSerializer, FollowSerializer,
                           FollowShowSerializer, IngredientSerializer,
                           RecipeCreateSerializer, RecipeSerializer,
-                          TagSerializer, RecipeShortSerializer)
+                          RecipeShortSerializer, TagSerializer)
 
 User = get_user_model()
 
@@ -77,7 +77,6 @@ class CustomUserViewSet(UserViewSet):
         return self.get_paginated_response(serializer.data)
 
 
-
 class IngredientViewSet(ModelViewSet):
     """ Отображение ингредиентов. """
 
@@ -103,17 +102,14 @@ class RecipeViewSet(ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilterSet
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
-
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
             return RecipeSerializer
         return RecipeCreateSerializer
-    
+
     def adding(self, model, user, pk):
         if model.objects.filter(user=user, recipe__id=pk).exists():
-            return Response({'errors': f'Такой рецепт уже существует.'},
+            return Response({'errors': 'Такой рецепт уже существует.'},
                             status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=pk)
         model.objects.create(user=user, recipe=recipe)
@@ -138,8 +134,7 @@ class RecipeViewSet(ModelViewSet):
 
         if request.method == 'POST':
             return self.adding(Favourite, request.user, pk)
-        else:
-            return self.deleting(Favourite, request.user, pk)
+        return self.deleting(Favourite, request.user, pk)
 
     @action(
         detail=True,
@@ -151,8 +146,7 @@ class RecipeViewSet(ModelViewSet):
 
         if request.method == 'POST':
             return self.adding(ShoppingCart, request.user, pk)
-        else:
-            return self.deleting(ShoppingCart, request.user, pk)
+        return self.deleting(ShoppingCart, request.user, pk)
 
     @action(
         detail=False,
