@@ -13,9 +13,8 @@ class UserAdmin(admin.ModelAdmin):
         'last_name',
         'role',
     )
-    list_editable = ('role',)
-    search_fields = ('username',)
-    list_filter = ('role',)
+    search_fields = ('username', 'email',)
+    list_filter = ('username', 'email',)
     empty_value_display = '-пусто-'
 
 
@@ -26,5 +25,5 @@ class FollowAdmin(admin.ModelAdmin):
         'user',
         'author',
     )
-    list_editable = ('author',)
+    search_fields = ('user', 'author',)
     empty_value_display = '-пусто-'
