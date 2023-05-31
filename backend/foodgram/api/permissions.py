@@ -1,4 +1,5 @@
-from rest_framework.permissions import SAFE_METHODS, BasePermission
+from rest_framework.permissions import BasePermission, SAFE_METHODS
+
 from users.models import USERS_ROLE
 
 

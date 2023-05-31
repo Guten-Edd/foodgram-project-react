@@ -1,28 +1,43 @@
-from datetime import datetime
-
-from app.models import (Favourite, Ingredient, IngredientRecipe, Recipe,
-                        ShoppingCart, Tag)
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.permissions import (SAFE_METHODS, IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
+from rest_framework.permissions import (
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
+    SAFE_METHODS,
+)
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+
+from app.models import (
+    Favourite,
+    Ingredient,
+    IngredientRecipe,
+    Recipe,
+    ShoppingCart,
+    Tag,
+)
 from users.models import Follow
 
 from .filters import IngredientSearchFilter, RecipeFilterSet
 from .pagination import CustomPagination
 from .permissions import IsAuthorOrAdminOrReadOnly
-from .serializers import (CustomUserSerializer, FollowSerializer,
-                          FollowShowSerializer, IngredientSerializer,
-                          RecipeCreateSerializer, RecipeSerializer,
-                          RecipeShortSerializer, TagSerializer)
+from .serializers import (
+    CustomUserSerializer,
+    FollowSerializer,
+    FollowShowSerializer,
+    IngredientSerializer,
+    RecipeCreateSerializer,
+    RecipeSerializer,
+    RecipeShortSerializer,
+    TagSerializer,
+)
 
 User = get_user_model()
 
@@ -52,7 +67,7 @@ class CustomUserViewSet(UserViewSet):
             )
 
             serializer.is_valid(raise_exception=True)
-            Follow.objects.create(user=user, author=author)
+            serializer.save(user=user, author=author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         subscription = get_object_or_404(Follow,
@@ -164,9 +179,9 @@ class RecipeViewSet(ModelViewSet):
         ).values(
             'ingredient__name',
             'ingredient__measurement_unit'
-        ).annotate(amount=Sum('amount'))
+        ).annotate(amount_sum=Sum('amount'))
 
-        today = datetime.today()
+        today = timezone.now()
         shopping_card_list = (
             f'Список покупок для: {user.get_full_name()}\n\n'
             f'Дата: {today:%d.%m.%Y}\n'
@@ -174,7 +189,7 @@ class RecipeViewSet(ModelViewSet):
         shopping_card_list += '\n'.join([
             f'+ {ingredient["ingredient__name"]} '
             f'({ingredient["ingredient__measurement_unit"]})'
-            f' - {ingredient["amount"]}'
+            f' - {ingredient["amount_sum"]}'
             for ingredient in ingredients
         ])
         shopping_card_list += f'\n\nFoodgram ({today:%Y})'

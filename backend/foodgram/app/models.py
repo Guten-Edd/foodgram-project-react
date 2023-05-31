@@ -1,4 +1,5 @@
 from django.db import models
+
 from users.models import MyUser
 
 
@@ -139,6 +140,11 @@ class IngredientRecipe(models.Model):
     class Meta:
         verbose_name = 'Ингредиент Рецепт'
         verbose_name_plural = 'Ингредиенты Рецепт'
+        constraints = [models.UniqueConstraint(
+            fields=['ingredient', 'recipe'],
+            name='unique_IngredientRecipe'
+            )
+        ]
 
     def __str__(self):
         return f'{self.ingredient} {self.amount}'

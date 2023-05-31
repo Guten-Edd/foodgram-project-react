@@ -1,31 +1,29 @@
-import base64
-
-from app.models import (Favourite, Ingredient, IngredientRecipe, Recipe,
-                        ShoppingCart, Tag)
 from django.contrib.auth import get_user_model
-from django.core.files.base import ContentFile
 from django.db.transaction import atomic
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
-from rest_framework.serializers import (ImageField, IntegerField,
-                                        ModelSerializer,
-                                        PrimaryKeyRelatedField,
-                                        SerializerMethodField,
-                                        SlugRelatedField, ValidationError)
+from rest_framework.serializers import (
+    IntegerField,
+    ModelSerializer,
+    PrimaryKeyRelatedField,
+    SerializerMethodField,
+    SlugRelatedField,
+    ValidationError,
+)
+
+from app.models import (
+    Favourite,
+    Ingredient,
+    IngredientRecipe,
+    Recipe,
+    ShoppingCart,
+    Tag,
+)
 from users.models import Follow
 
+from .fields import Base64ImageField
+
 User = get_user_model()
-
-
-class Base64ImageField(ImageField):
-    """Сериализатор поля image для рецептов."""
-
-    def to_internal_value(self, data):
-        if isinstance(data, str) and data.startswith('data:image'):
-            format, imgstr = data.split(';base64,')
-            ext = format.split('/')[-1]
-            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
-        return super().to_internal_value(data)
 
 
 class CustomUserSerializer(UserSerializer):
@@ -189,12 +187,6 @@ class CreateIngredientRecipeSerializer(ModelSerializer):
             })
         return data
 
-    def create(self, validated_data):
-        return IngredientRecipe.objects.create(
-            ingredient=validated_data.get('id'),
-            amount=validated_data.get('amount')
-        )
-
 
 class RecipeCreateSerializer(ModelSerializer):
     """ Сериализатор создания/обновления рецепта. """
@@ -231,7 +223,7 @@ class RecipeCreateSerializer(ModelSerializer):
         return recipe
 
     def validate(self, data):
-        ingredients = self.initial_data.get('ingredients')
+        ingredients = self.data.get('ingredients')
         ingredients_list = []
         for ingredient in ingredients:
             ingredient_id = ingredient['id']
