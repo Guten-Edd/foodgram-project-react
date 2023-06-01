@@ -284,7 +284,7 @@ class UserCreateSerializer(UserCreateSerializer):
         if value.lower() == 'me':
             raise ValidationError({
                 'errors': f"Имя '{value}' недопустимо",
-                })
+            })
         return value
 
 

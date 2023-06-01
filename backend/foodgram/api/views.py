@@ -61,7 +61,7 @@ class CustomUserViewSet(UserViewSet):
                 data={
                     'user': user.id,
                     'author': author.id,
-                    },
+                },
                 context={'request': request}
             )
 
