@@ -226,7 +226,7 @@ class RecipeCreateSerializer(ModelSerializer):
         ingredients_list = []
         for ingredient in ingredients:
             ingredient_id = get_object_or_404(
-                Ingredient, id=ingredient['id'])
+                Ingredient, id=ingredient['name'])
             if ingredient_id in ingredients_list:
                 raise ValidationError(
                     'Есть задублированные ингредиенты!'
