@@ -22,15 +22,15 @@ gunicorn
 
 ### Подготовка и запуск проекта в Docker
 
-***
 Клонировать репозиторий:
 
 ```
 git clone git@github.com:Guten-Edd/foodgram-project-react.git
 ```
 
-***
-Пример заполнения infra/.env
+
+Создать infra/.env
+Пример заполнения infra/.env:
 
 ```
 SECRET_KEY=Секретный_ключ
@@ -42,6 +42,7 @@ POSTGRES_PASSWORD=postgres
 DB_HOST=db
 DB_PORT=5432
 ```
+
 Запустить docker-compose:
 
 ```
