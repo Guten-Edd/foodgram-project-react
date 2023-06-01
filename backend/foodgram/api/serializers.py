@@ -186,6 +186,12 @@ class CreateIngredientRecipeSerializer(ModelSerializer):
             })
         return data
 
+    def create(self, validated_data): 
+        return IngredientRecipe.objects.create( 
+            ingredient=validated_data.get('id'), 
+            amount=validated_data.get('amount')
+        )
+
 
 class RecipeCreateSerializer(ModelSerializer):
     """ Сериализатор создания/обновления рецепта. """
