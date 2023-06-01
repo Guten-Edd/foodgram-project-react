@@ -24,7 +24,6 @@ from app.models import (
     Tag,
 )
 from users.models import Follow
-
 from .filters import IngredientSearchFilter, RecipeFilterSet
 from .pagination import CustomPagination
 from .permissions import IsAuthorOrAdminOrReadOnly

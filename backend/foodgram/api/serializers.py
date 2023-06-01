@@ -20,7 +20,6 @@ from app.models import (
     Tag,
 )
 from users.models import Follow
-
 from .fields import Base64ImageField
 
 User = get_user_model()
@@ -223,7 +222,7 @@ class RecipeCreateSerializer(ModelSerializer):
         return recipe
 
     def validate(self, data):
-        ingredients = self.data.get('ingredients')
+        ingredients = data['ingredients']
         ingredients_list = []
         for ingredient in ingredients:
             ingredient_id = ingredient['id']
