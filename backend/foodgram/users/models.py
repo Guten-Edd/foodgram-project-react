@@ -33,7 +33,7 @@ class MyUser(AbstractUser):
         'e-mail',
         max_length=254,
         unique=True,
-        )
+    )
     first_name = models.TextField('Имя', max_length=150,)
     last_name = models.TextField('Фамилия', max_length=150,)
 
