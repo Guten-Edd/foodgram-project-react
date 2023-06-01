@@ -5,11 +5,13 @@
 
 ### Технологии:
 
-Python 3.7
+[![Django-app workflow](https://github.com/Guten-Edd/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)](https://github.com/Guten-Edd/foodgram-project-react/actions/workflows/foodgram_workflow.yml)
+
+Python 3.8
 
 Django 3.2
 
-Django REST Framework 
+Django REST Framework
 
 PostgreSQL
 
@@ -94,11 +96,13 @@ docker-compose start
 python manage.py csv_import
 ```
 
-Документация доступна по адресу:
+Проект доступен по адресу:
 
 ```
-http://localhost/api/docs/redoc.html
+http://158.160.70.56/
 ```
+
+Admin: admin pass: 12345
 
 ### Автор:
 [Эдуард Соловьев](https://github.com/Guten-Edd)

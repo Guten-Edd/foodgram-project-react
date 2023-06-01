@@ -186,12 +186,6 @@ class CreateIngredientRecipeSerializer(ModelSerializer):
             })
         return data
 
-    def create(self, validated_data):
-        return IngredientRecipe.objects.create(
-            ingredient=validated_data.get('id'),
-            amount=validated_data.get('amount')
-        )
-
 
 class RecipeCreateSerializer(ModelSerializer):
     """ Сериализатор создания/обновления рецепта. """
@@ -228,11 +222,10 @@ class RecipeCreateSerializer(ModelSerializer):
         return recipe
 
     def validate(self, data):
-        ingredients = data['ingredients']
+        ingredients = self.initial_data.get('ingredients')
         ingredients_list = []
         for ingredient in ingredients:
-            ingredient_id = get_object_or_404(
-                Ingredient, id=ingredient['name'])
+            ingredient_id = ingredient['id']
             if ingredient_id in ingredients_list:
                 raise ValidationError(
                     'Есть задублированные ингредиенты!'
@@ -246,7 +239,7 @@ class RecipeCreateSerializer(ModelSerializer):
 
     @atomic
     def create(self, validated_data):
-        user = self.context.get['request'].user
+        user = self.context.get('request').user
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(
