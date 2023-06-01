@@ -9,10 +9,7 @@ services:
       - .env
 
   backend:
-    image: gutenedd/foodgram-project
-    # build:
-    #   context: ../backend/foodgram
-    #   dockerfile: Dockerfile
+    image: gutenedd/foodgram-backend
     container_name: foodgram-backend
     restart: always
     volumes:
@@ -26,9 +23,6 @@ services:
   frontend:
     container_name: foodgram-frontend
     image: gutenedd/foodgram_frontend
-    # build:
-    #   context: ../frontend
-    #   dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
