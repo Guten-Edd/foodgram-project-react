@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.db.models import F
 from django.db.transaction import atomic
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
@@ -121,11 +122,12 @@ class RecipeSerializer(ModelSerializer):
 
     tags = TagSerializer(many=True, read_only=True)
     author = CustomUserSerializer(read_only=True)
-    ingredients = RecipeIngredientsSerializer(
-        many=True,
-        read_only=True,
-        source='ingridients_recipe',
-    )
+    # ingredients = RecipeIngredientsSerializer(
+    #     many=True,
+    #     read_only=True,
+    #     source='ingridients_recipe',
+    # )
+    ingredients = SerializerMethodField()
     is_favorited = SerializerMethodField(read_only=True)
     is_in_shopping_cart = SerializerMethodField(read_only=True)
 
@@ -159,6 +161,16 @@ class RecipeSerializer(ModelSerializer):
         return ShoppingCart.objects.filter(
             user=request.user, recipe__id=obj.id
         ).exists()
+
+    def get_ingredients(self, obj):
+        recipe = obj
+        ingredients = recipe.ingredients.values(
+            'id',
+            'name',
+            'measurement_unit',
+            amount=F('ingredientinrecipe__amount')
+        )
+        return ingredients
 
 
 class CreateIngredientRecipeSerializer(ModelSerializer):
