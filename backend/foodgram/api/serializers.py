@@ -122,11 +122,6 @@ class RecipeSerializer(ModelSerializer):
 
     tags = TagSerializer(many=True, read_only=True)
     author = CustomUserSerializer(read_only=True)
-    # ingredients = RecipeIngredientsSerializer(
-    #     many=True,
-    #     read_only=True,
-    #     source='ingridients_recipe',
-    # )
     ingredients = SerializerMethodField()
     is_favorited = SerializerMethodField(read_only=True)
     is_in_shopping_cart = SerializerMethodField(read_only=True)
@@ -170,7 +165,6 @@ class RecipeSerializer(ModelSerializer):
             'measurement_unit',
             amount=F('ingredientrecipe__amount')
         )
-        # return ingredients
 
 
 class CreateIngredientRecipeSerializer(ModelSerializer):
